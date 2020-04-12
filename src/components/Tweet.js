@@ -2,15 +2,27 @@ import React, {Component} from "react";
 import {formatDate, formatTweet} from "../utils/helpers";
 import {connect} from "react-redux";
 import { TiArrowBackOutline, TiHeartOutline, TiHeartFullOutline} from 'react-icons/ti/index';
+import {handleToggleTweet} from "../actions/tweets";
 
 class Tweet extends Component {
     toParent = (e, id) => {
         e.preventDefault();
 
+
     }
 
-    handleLike = e => {
+    handleLike = (e) => {
         e.preventDefault();
+
+        const {dispatch, tweet, authedUser} = this.props;
+
+        console.log("New props are ", this.props)
+
+        dispatch(handleToggleTweet({
+            id: tweet.id,
+            hasLiked: tweet.hasLiked,
+            authedUser
+        }));
     }
 
     render() {
@@ -21,7 +33,7 @@ class Tweet extends Component {
         }
 
         const {
-            name, avatar, timestamp, text, hasLiked, likes, replies, id, parent
+            name, avatar, timestamp, text, hasLiked, likes, replies, parent
         } = tweet;
 
         return (
@@ -58,13 +70,15 @@ class Tweet extends Component {
     }
 }
 
-function mapStateToProps({authedUser, users, tweets}, {id}) {
-    const tweet = tweets[id];
-    const parentTweet = tweet ? tweets[tweet.replyingTo] : null;
+function mapStateToProps ({authedUser, users, tweets}, { id }) {
+    const tweet = tweets[id]
+    const parentTweet = tweet ? tweets[tweet.replyingTo] : null
 
     return {
         authedUser,
-        tweet: tweet ? formatTweet(tweet, users[tweet.author], authedUser, parentTweet) : null
+        tweet: tweet
+            ? formatTweet(tweet, users[tweet.author], authedUser, parentTweet)
+            : null
     }
 }
 
